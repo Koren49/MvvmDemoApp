@@ -13,28 +13,36 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class PostsViewModel: ViewModel() {
+class PostsViewModel() : ViewModel() {
 
-    private val _postsListFromService = MutableLiveData<List<Post>>()
-    val postsListFromService: LiveData<List<Post>> = _postsListFromService
-
+    // backing field
+    private val _postsList = MutableLiveData<List<Post>>()
+    val postsList: LiveData<List<Post>> = _postsList
     private val _state = MutableLiveData<State>()
-    val state : LiveData<State> = _state
+    val state: LiveData<State> = _state
 
     fun getPosts() {
-        CoroutineScope(Dispatchers.IO).launch {
+
             _state.postValue(State.LOADING)
 
-            RepoFactory.postsRepository.getPosts().enqueue(object: Callback<List<Post>> {
+            RepoFactory.postsRepository.getPosts().enqueue(object : Callback<List<Post>> {
 
                 override fun onResponse(call: Call<List<Post>>, response: Response<List<Post>>) {
                     // once we have a response, we can notify the activity with the data
-                    if (response.isSuccessful){
+                    if (response.isSuccessful) {
                         // let the state observer know that it is no longer in loading mode, but in idle mode
                         _state.postValue(State.IDLE)
                         val listOfPosts = response.body() // List of posts
-                        _postsListFromService.postValue(listOfPosts)
-                    }else{
+                       // _postsListFromService.postValue(listOfPosts)
+                        // For demonstrating purposes, let's save listsOfPosts to room DB
+                        if (listOfPosts != null) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                RepoFactory.postsRepository.updatePosts(listOfPosts)
+                                val listOfPostsFromRoom = RepoFactory.postsRepository.getPostsFromRoom()
+                                _postsList.postValue(listOfPostsFromRoom)
+                            }
+                        }
+                    } else {
                         _state.postValue(State.ERROR)
                     }
                 }
@@ -43,6 +51,6 @@ class PostsViewModel: ViewModel() {
                     _state.postValue(State.ERROR)
                 }
             })
-        }
+      //  }
     }
 }
