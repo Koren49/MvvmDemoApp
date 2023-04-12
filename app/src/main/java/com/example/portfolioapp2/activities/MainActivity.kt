@@ -26,9 +26,6 @@ class MainActivity : AppCompatActivity() {
         installSplashScreen().apply {}
         setContentView(binding.root)
 
-
-
-
         setupRecyclerView()
         setupObservers()
     }

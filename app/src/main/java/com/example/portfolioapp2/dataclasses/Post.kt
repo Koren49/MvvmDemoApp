@@ -4,13 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-//data class Post(
-//    val id: Int,
-//    val userId: Int,
-//    val title: String,
-//    val body: String
-//)
-
 @Entity(tableName = "posts")
 data class Post(
     @PrimaryKey val id: Int,
