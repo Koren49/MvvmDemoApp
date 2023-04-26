@@ -30,6 +30,7 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostsViewHolder>(DiffCallbac
         }
     }
 
+    // Skip unchanged items in the RecyclerView
     class DiffCallback : DiffUtil.ItemCallback<Post>(){
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
             return oldItem.id == newItem.id

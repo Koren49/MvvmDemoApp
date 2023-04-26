@@ -17,7 +17,7 @@ interface PostDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun updatePosts(postList: List<Post>)
-    //
+
     @Delete
     fun delete(post: Post)
 }

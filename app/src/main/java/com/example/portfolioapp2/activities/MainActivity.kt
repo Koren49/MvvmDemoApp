@@ -18,12 +18,12 @@ import com.google.android.material.snackbar.Snackbar
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    val postsViewModel: PostsViewModel by viewModels()
-    // yo do
+    private val postsViewModel: PostsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        installSplashScreen().apply {}
+        installSplashScreen()
         setContentView(binding.root)
 
         setupRecyclerView()
@@ -43,19 +43,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        postsViewModel.postsList.observe(this) {
-            (binding.postsRecyclerView.adapter as PostsAdapter).submitList(it)
-        }
         postsViewModel.apply {
+            postsList.observe(this@MainActivity) {
+                // Null safe casting
+                (binding.postsRecyclerView.adapter as? PostsAdapter)?.submitList(it)
+            }
+
             getPosts()
 
             state.observe(this@MainActivity) {
                 when (it) {
                     State.ERROR -> {
-                        Snackbar.make(binding.rootLayout, getString(R.string.error_message), Snackbar.LENGTH_LONG)
-                            .show()
+                        Snackbar.make(binding.rootLayout, getString(R.string.error_message), Snackbar.LENGTH_LONG).show()
                         binding.progressBar.gone()
-                        // binding.progressBar.gone()
                     }
                     State.LOADING -> binding.progressBar.visible()
                     State.IDLE,
